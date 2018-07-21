@@ -57,6 +57,7 @@ def writeScore1(qAData, outFile, modelName):
                         score*=weight
                     except:
                         score*=0.75
+                    '''
                     if abs(score)<0.000001:
                         hscore=0
                         for a_seg in a:
@@ -65,6 +66,7 @@ def writeScore1(qAData, outFile, modelName):
                                     hscore=max(hscore, model.similarity(a_seg, b_seg))
                                 except:
                                     pass
+                    '''
                     highScore=max(score, highScore)
                     #print(i, "\t", aIndex, "\t", score)
                 out.write(str(highScore))
@@ -100,6 +102,83 @@ def writeScore2(qAData, outFile):
                 out.write("\n")
 
 
+def writeScore3(qAData, outFile, modelName):
+    model = Word2Vec.load(modelName)
+    with open(outFile, "w", encoding= "UTF-8") as out:
+        for qIndex in range(qAData.questionList.__len__()):
+            a=qAData.questionList[qIndex]
+            if len(a)>scope:
+                a=a[-scope:]
+            a_len=a.__len__()
+            for aIndex in qAData.qAnswersDic[qIndex].keys():
+                highScore=0
+                b=qAData.qAnswersDic[qIndex][aIndex]
+                if b.__len__()>a_len:
+                    for i in range(b.__len__()-a_len+1):
+                        b_tmp=b[i:i+a_len]
+                        try:
+                            score=model.n_similarity(a, b_tmp)
+                        except:
+                            score=0
+                        try:
+                            weight=1
+                            for tmp in a:
+                                if tmp in b_tmp:
+                                    weight*=(-math.log(qAData.quesTFDic[qIndex][tmp]/qAData.quesTFDic[qIndex][0]))
+                            score*=weight
+                        except:
+                            score*=0.75
+                        '''
+                        if abs(score)<0.000001:
+                            hscore=0
+                            for a_seg in a:
+                                for b_seg in b_tmp:
+                                    try:
+                                        hscore=max(hscore, model.similarity(a_seg, b_seg))
+                                    except:
+                                        pass
+                        '''
+                        highScore=max(score, highScore)
+                        #print(i, "\t", aIndex, "\t", score)
+                else:
+                    b_tmp = b
+                    try:
+                        score = model.n_similarity(a, b_tmp)
+                    except:
+                        score = 0
+                    try:
+                        weight = 1
+                        for tmp in a:
+                            if tmp in b_tmp:
+                                weight *= (-math.log(qAData.quesTFDic[qIndex][tmp] / qAData.quesTFDic[qIndex][0]))
+                        score *= weight
+                    except:
+                        score *= 0.75
+                    '''
+                    if abs(score)<0.000001:
+                        hscore=0
+                        for a_seg in a:
+                            for b_seg in b_tmp:
+                                try:
+                                    hscore=max(hscore, model.similarity(a_seg, b_seg))
+                                except:
+                                    pass
+                    '''
+                    highScore = max(score, highScore)
+                    # print(i, "\t", aIndex, "\t", score)
+                if abs(highScore) <= 0.000001:
+                    for a_seg in a:
+                        for b_seg in b_tmp:
+                            try:
+                                highScore = max(highScore, a.index(a_seg)*model.similarity(a_seg, b_seg))
+                            except:
+                                pass
+
+                out.write(str(highScore))
+                out.write("\n")
+
+
+
 
 '''
 函數功能：
@@ -126,7 +205,7 @@ if __name__=="__main__":
     ProD.wordSeg(test)
     ProD.delHighFre_useless(test)
     ProD.delHighFre_psg(test)
-    QueTypeWay.digitToSeg(test)
+    #QueTypeWay.digitToSeg(test)
     test.calFre()
     trainModel(fileName, test)
     #'''

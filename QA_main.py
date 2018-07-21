@@ -27,6 +27,7 @@ if __name__=="__main__":
     ProD.wordSeg(test)
     ProD.delHighFre_useless(test)
     ProD.delHighFre_psg(test)
+    QueTypeWay.digitToSeg(test)
     test.calFre()
-    WordVec.writeScore1(test, scoreFile, "trainData.model")
+    WordVec.writeScore3(test, scoreFile, "trainData.model")
     print("OK, DONE.")
