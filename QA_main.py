@@ -22,6 +22,7 @@ if __name__ == "__main__":
     assert sys.argv.__len__() == 3
     fileName = sys.argv[1]
     scoreFile = sys.argv[2]
+    WordVec.train()
     test = ReadFile.QAData(fileName)
     test.readFile()
     ProD.wordSeg(test)

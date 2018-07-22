@@ -198,7 +198,15 @@ def trainModel(qAData, outFile):
 
 
 
+def train():
+    fileName = "trainData.model"
+    test = ReadFile.QAData("training.data")
+    test.readFile()
 
+    ProD.wordSeg(test)
+    ProD.delHighFre_useless(test)
+    ProD.delHighFre_psg(test)
+    trainModel(test, fileName)
 
 if __name__ == "__main__":
     # '''
